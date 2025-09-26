@@ -1,0 +1,3 @@
+[submodule "kueri"]
+	path = kueri
+	url = git@github.com:johanesPao/puma_reporting_kueri.git
