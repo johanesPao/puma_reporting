@@ -8,7 +8,6 @@ def buka_koneksi(
     string_koneksi = (
         f"SERVER={server},{port};DATABASE={database};UID={uid};PWD={pwd};Encrypt=no"
     )
-    print(string_koneksi)
     return connect(string_koneksi)
 
 
