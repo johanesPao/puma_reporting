@@ -1,3 +1,4 @@
+from utilitas.logging import log_dan_waktu
 from dataclasses import dataclass
 from argparse import Namespace
 from datetime import datetime, timedelta
@@ -15,6 +16,7 @@ def akhir_minggu_sebelumnya(tanggal: datetime, hari_pertama: int) -> datetime:
     return tanggal - timedelta(days=selisih_hari + 1)
 
 
+@log_dan_waktu("Mengkonversi argumen ke mode skrip")
 def eval_argumen(argumen: Namespace) -> ModeScript:
     list_tipe_laporan: list[str] = (
         ["sales", "inventory"]

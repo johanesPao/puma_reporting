@@ -1,3 +1,4 @@
+from utilitas.logging import log_dan_waktu
 from dataclasses import dataclass
 import os
 from dotenv import load_dotenv
@@ -21,6 +22,7 @@ class KredensialSFTP:
     password: str
 
 
+@log_dan_waktu("Membaca dan memuat rahasia lingkungan")
 class Rahasia:
     def __init__(self):
         load_dotenv()

@@ -1,3 +1,4 @@
+from utilitas.logging import log_dan_waktu
 import argparse
 from datetime import datetime
 from dateutil.parser import parse
@@ -32,6 +33,7 @@ def parser_periode(periode_str: str) -> tuple[datetime, datetime]:
         )
 
 
+@log_dan_waktu("Membaca argumen dari command line")
 def parse_argumen() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Command line interface untuk automasi laporan mingguan PUMA"
