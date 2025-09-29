@@ -3,14 +3,18 @@ from datetime import datetime
 from dateutil.parser import parse
 
 
-def parser_tanggal(tanggal_str: str) -> str:
+def parser_weekday_python(hari_pertama: str) -> int:
+    return int(hari_pertama) - 1
+
+
+def parser_tanggal(tanggal_str: str) -> datetime:
     try:
-        return parse(tanggal_str).strftime("%Y-%m-%d")
+        return parse(tanggal_str)
     except ValueError:
         raise argparse.ArgumentTypeError(f"Tanggal tidak valid: {tanggal_str}")
 
 
-def parser_periode(periode_str: str) -> tuple[str, str]:
+def parser_periode(periode_str: str) -> tuple[datetime, datetime]:
     try:
         tanggal_mulai, tanggal_akhir = periode_str.split(",")
 
@@ -35,9 +39,9 @@ def parse_argumen() -> argparse.Namespace:
     parser.add_argument(
         "-hp",
         "--hari-pertama",
-        type=int,
+        type=parser_weekday_python,
         choices=range(1, 8),
-        default=1,
+        default=0,
         help="Hari pertama dalam minggu (1=Senin, 7=Minggu) (default: 1)",
     )
     parser.add_argument(
@@ -58,7 +62,7 @@ def parse_argumen() -> argparse.Namespace:
         "-t",
         "--tanggal",
         type=parser_tanggal,
-        default=datetime.now().strftime("%Y-%m-%d"),
+        default=datetime.now(),
         help="Tanggal laporan dalam format tanggal YYYY-MM-DD, YYYYMMDD, dll (default: hari ini)",
     )
     parser.add_argument(
