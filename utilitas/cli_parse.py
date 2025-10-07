@@ -75,6 +75,14 @@ def parse_argumen() -> argparse.Namespace:
         help="Periode laporan dalam format YYYY-MM-DD,YYYY-MM-DD atau YYYYMMDD,YYYYMMDD"
         " dimana tanggal pertama lebih kecil dari tanggal kedua (default: None)",
     )
+    parser.add_argument(
+        "-sf",
+        "--satu-file",
+        type=str,
+        choices=["ya", "tidak"],
+        default="tidak",
+        help="Dump data laporan per tipe laporan dalam periode (default: False)",
+    )
     args = parser.parse_args()
 
     if args.mode_tanggal == "periode" and args.periode is None:
