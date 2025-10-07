@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 from datetime import datetime, timedelta
 from mssql_python import Connection
-from pandas import DataFrame
+import pandas as pd
 from utilitas.logging import log_dan_waktu
 from utilitas.eval_argumen import ModeScript
 from utilitas.rahasia import KredensialDatabase
@@ -43,7 +43,7 @@ def simpan_csv(data, nama_file: str, folder_output: Path) -> None:
     data.to_csv(path_file, index=False, encoding="utf-8-sig")
 
 
-def get_data(koneksi: Connection, tipe_laporan: str, tanggal: str) -> DataFrame:
+def get_data(koneksi: Connection, tipe_laporan: str, tanggal: str) -> pd.DataFrame:
     match tipe_laporan:
         case "sales":
             return eksekusi_kueri(koneksi, get_kueri_sales(tanggal))
@@ -53,6 +53,7 @@ def get_data(koneksi: Connection, tipe_laporan: str, tanggal: str) -> DataFrame:
 
 def generate(mode: ModeScript, db: KredensialDatabase) -> None:
     for tipe in mode.tipe_laporan:
+        df_satufile = pd.DataFrame()
         for tanggal in mode.tanggal:
             with buka_koneksi(
                 db.server, db.port, db.database, db.uid, db.pwd
@@ -63,10 +64,19 @@ def generate(mode: ModeScript, db: KredensialDatabase) -> None:
 
                 tipe_file_laporan = "Sales" if tipe == "sales" else "Inventory"
 
-                simpan_csv(
-                    data,
-                    f"AtmosID_{tipe_file_laporan}_{parse(tanggal).strftime('%Y%m%d')}.csv",
-                    setup_folder_output(),
-                )
+                if mode.satu_file == "ya" and data is not None:
+                    df_satufile = pd.concat([df_satufile, data], ignore_index=True)
+                else:
+                    simpan_csv(
+                        data,
+                        f"AtmosID_{tipe_file_laporan}_{parse(tanggal).strftime('%Y%m%d')}.csv",
+                        setup_folder_output(),
+                    )
 
                 tutup_koneksi(koneksi)
+        if mode.satu_file == "ya":
+            simpan_csv(
+                df_satufile,
+                f"AtmosID_{tipe}_{parse(max(mode.tanggal)).strftime('%Y%m%d')}.csv",
+                setup_folder_output(),
+            )
