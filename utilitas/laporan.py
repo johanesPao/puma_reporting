@@ -11,7 +11,7 @@ from koneksi.mssql import buka_koneksi, eksekusi_kueri, tutup_koneksi
 from kueri.mssql import get_kueri_sales, get_kueri_inventori
 
 FOLDER_DASAR_OUTPUT = Path("output")
-HARI_RETENSI = 7
+HARI_RETENSI = 28
 
 
 def setup_folder_output() -> Path:
@@ -38,9 +38,10 @@ def setup_folder_output() -> Path:
     return folder_output
 
 
-def simpan_csv(data, nama_file: str, folder_output: Path) -> None:
+def simpan_csv(data, nama_file: str, folder_output: Path) -> Path:
     path_file = folder_output / nama_file
     data.to_csv(path_file, index=False, encoding="utf-8-sig")
+    return path_file
 
 
 def get_data(koneksi: Connection, tipe_laporan: str, tanggal: str) -> pd.DataFrame:
@@ -51,32 +52,44 @@ def get_data(koneksi: Connection, tipe_laporan: str, tanggal: str) -> pd.DataFra
             return eksekusi_kueri(koneksi, get_kueri_inventori(tanggal))
 
 
-def generate(mode: ModeScript, db: KredensialDatabase) -> None:
+def generate(mode: ModeScript, db: KredensialDatabase) -> list[Path]:
+    folder_output = setup_folder_output()
+    csv_terbentuk: list[Path] = []
+
     for tipe in mode.tipe_laporan:
         df_satufile = pd.DataFrame()
+
         for tanggal in mode.tanggal:
-            with buka_koneksi(
-                db.server, db.port, db.database, db.uid, db.pwd
-            ) as koneksi:
-                data = log_dan_waktu(f"Menarik data {tipe} untuk tanggal {tanggal}")(
-                    lambda: get_data(koneksi, tipe, tanggal)
-                )()
+            nama_proses = f"Menarik data {tipe} untuk tanggal {tanggal}"
 
-                tipe_file_laporan = "Sales" if tipe == "sales" else "Inventory"
+            @log_dan_waktu(nama_proses)
+            def proses_tanggal() -> None:
+                with buka_koneksi(
+                    db.server, db.port, db.database, db.uid, db.pwd
+                ) as koneksi:
+                    data = get_data(koneksi, tipe, tanggal)
 
-                if mode.satu_file == "ya" and data is not None:
-                    df_satufile = pd.concat([df_satufile, data], ignore_index=True)
-                else:
-                    simpan_csv(
-                        data,
-                        f"AtmosID_{tipe_file_laporan}_{parse(tanggal).strftime('%Y%m%d')}.csv",
-                        setup_folder_output(),
-                    )
+                    tipe_file_laporan = "Sales" if tipe == "sales" else "Inventory"
 
-                tutup_koneksi(koneksi)
-        if mode.satu_file == "ya":
-            simpan_csv(
+                    if mode.satu_file == "ya" and data is not None:
+                        nonlocal df_satufile
+                        df_satufile = pd.concat([df_satufile, data], ignore_index=True)
+                    else:
+                        path = simpan_csv(
+                            data,
+                            f"AtmosID_{tipe_file_laporan}_{parse(tanggal).strftime('%Y%m%d')}.csv",
+                            folder_output,
+                        )
+                        csv_terbentuk.append(path)
+
+            proses_tanggal()
+
+        if mode.satu_file == "ya" and not df_satufile.empty:
+            path = simpan_csv(
                 df_satufile,
                 f"AtmosID_{tipe}_{parse(max(mode.tanggal)).strftime('%Y%m%d')}.csv",
-                setup_folder_output(),
+                folder_output,
             )
+            csv_terbentuk.append(path)
+
+    return csv_terbentuk

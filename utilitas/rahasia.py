@@ -22,6 +22,13 @@ class KredensialSFTP:
     password: str
 
 
+@dataclass
+class KredensialEmail:
+    username: str
+    password: str
+    to: str
+
+
 @log_dan_waktu("Membaca dan memuat rahasia lingkungan")
 class Rahasia:
     def __init__(self):
@@ -39,4 +46,9 @@ class Rahasia:
             protocol=os.getenv("SFTP_PROTOCOL"),
             user=os.getenv("SFTP_USER"),
             password=os.getenv("SFTP_PASSWORD"),
+        )
+        self.email = KredensialEmail(
+            username=os.getenv("GMAIL_ACCOUNT"),
+            password=os.getenv("GMAIL_APP_PASSWORD"),
+            to=os.getenv("TO_ADDRESS"),
         )

@@ -10,7 +10,9 @@ def log_dan_waktu(nama_proses: str):
     def decorator_log_dan_waktu(fungsi):
         @functools.wraps(fungsi)
         def wrapper(*argumen, **kw_argumen):
-            logging.info(f"Memulai proses: {nama_proses}")
+            pesan_proses = f"▶️ Memulai proses: {nama_proses}"
+            logging.info(pesan_proses)
+            hasil_proses.append(pesan_proses)
             waktu_mulai = time.time()
             try:
                 hasil = fungsi(*argumen, **kw_argumen)
