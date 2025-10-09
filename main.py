@@ -32,22 +32,25 @@ if __name__ == "__main__":
 
     file_csv = generate(mode_skrip, rahasia.db)
 
-    # Ambil tanggal paling akhir dari mode_skrip.tanggal
-    tgl_akhir = max(parse(tgl) for tgl in mode_skrip.tanggal)
-    tgl_akhir_string = tgl_akhir.strftime("%Y%m%d")
+    if mode_skrip.kirim_email == "ya":
+        # Ambil tanggal paling akhir dari mode_skrip.tanggal
+        tgl_akhir = max(parse(tgl) for tgl in mode_skrip.tanggal)
+        tgl_akhir_string = tgl_akhir.strftime("%Y%m%d")
 
-    # Subyek email
-    subyek_email = f"Laporan PUMA Week Ending {tgl_akhir_string}"
+        # Subyek email
+        subyek_email = f"Laporan PUMA Week Ending {tgl_akhir_string}"
 
-    isi_html = generate_isi_email(
-        FILE_LOG, tgl_akhir_string, proses_sukses=bool(file_csv and len(file_csv) > 0)
-    )
+        isi_html = generate_isi_email(
+            FILE_LOG,
+            tgl_akhir_string,
+            proses_sukses=bool(file_csv and len(file_csv) > 0),
+        )
 
-    kirim_email(
-        gmail_account=rahasia.email.username,
-        gmail_app_password=rahasia.email.password,
-        subyek=subyek_email,
-        to_addr=rahasia.email.to,
-        isi_html=isi_html,
-        lampiran=file_csv,
-    )
+        kirim_email(
+            gmail_account=rahasia.email.username,
+            gmail_app_password=rahasia.email.password,
+            subyek=subyek_email,
+            to_addr=rahasia.email.to,
+            isi_html=isi_html,
+            lampiran=file_csv,
+        )
