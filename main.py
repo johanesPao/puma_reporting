@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     file_csv = generate(mode_skrip, rahasia.db)
 
-    if mode_skrip.kirim_email == "ya":
+    if mode_skrip.kirim_email:
         # Ambil tanggal paling akhir dari mode_skrip.tanggal
         tgl_akhir = max(parse(tgl) for tgl in mode_skrip.tanggal)
         tgl_akhir_string = tgl_akhir.strftime("%Y%m%d")

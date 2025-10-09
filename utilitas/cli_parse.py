@@ -2,6 +2,7 @@ from utilitas.logging import log_dan_waktu
 import argparse
 from datetime import datetime
 from dateutil.parser import parse
+from utilitas.enums import TIPE_LAPORAN, MODE_TANGGAL, ARGUMEN
 
 
 def parser_weekday_python(hari_pertama: str) -> int:
@@ -49,16 +50,16 @@ def parse_argumen() -> argparse.Namespace:
     parser.add_argument(
         "-tl",
         "--tipe-laporan",
-        choices=["sales", "inventory", "semua"],
-        default="semua",
-        help="Tipe laporan yang akan dihasilkan (default: semua)",
+        choices=[TIPE_LAPORAN.SALES, TIPE_LAPORAN.INVENTORY, TIPE_LAPORAN.SEMUA],
+        default=TIPE_LAPORAN.SEMUA,
+        help=f"Tipe laporan yang akan dihasilkan (default: {TIPE_LAPORAN.SEMUA})",
     )
     parser.add_argument(
         "-mt",
         "--mode-tanggal",
-        choices=["tanggal", "periode"],
-        default="tanggal",
-        help="Mode dalam menjalankan laporan (default: tanggal)",
+        choices=[MODE_TANGGAL.TANGGAL, MODE_TANGGAL.PERIODE],
+        default=MODE_TANGGAL.TANGGAL,
+        help=f"Mode dalam menjalankan laporan (default: {MODE_TANGGAL.TANGGAL})",
     )
     parser.add_argument(
         "-t",
@@ -79,21 +80,31 @@ def parse_argumen() -> argparse.Namespace:
         "-sf",
         "--satu-file",
         type=str,
-        choices=["ya", "tidak"],
-        default="tidak",
-        help="Dump data laporan per tipe laporan dalam periode (default: tidak)",
+        choices=[ARGUMEN.YA, ARGUMEN.TIDAK],
+        default=ARGUMEN.TIDAK,
+        help=f"Dump data laporan per tipe laporan dalam periode (default: {ARGUMEN.TIDAK})",
     )
     parser.add_argument(
         "-ke",
         "--kirim-email",
         type=str,
-        choices=["ya", "tidak"],
-        default="ya",
-        help="Mengirimkan email pada akhir proses (default: ya)",
+        choices=[ARGUMEN.YA, ARGUMEN.TIDAK],
+        default=ARGUMEN.YA,
+        help=f"Mengirimkan email pada akhir proses (default: {ARGUMEN.YA})",
+    )
+    parser.add_argument(
+        "-ts",
+        "--transfer-sftp",
+        type=str,
+        choices=[ARGUMEN.YA, ARGUMEN.TIDAK],
+        default=ARGUMEN.YA,
+        help=f"Transfer file hasil dump ke sftp target (default: {ARGUMEN.YA})",
     )
     args = parser.parse_args()
 
-    if args.mode_tanggal == "periode" and args.periode is None:
-        parser.error("Mode 'periode' mengharuskan argumen --periode diisi.")
+    if args.mode_tanggal == MODE_TANGGAL.PERIODE and args.periode is None:
+        parser.error(
+            f"Mode '{MODE_TANGGAL.PERIODE}' mengharuskan argumen --periode diisi."
+        )
 
     return args

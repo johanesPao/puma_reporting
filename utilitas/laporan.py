@@ -9,6 +9,7 @@ from utilitas.rahasia import KredensialDatabase
 from dateutil.parser import parse
 from koneksi.mssql import buka_koneksi, eksekusi_kueri
 from kueri.mssql import get_kueri_sales, get_kueri_inventori
+from utilitas.enums import TIPE_LAPORAN
 
 FOLDER_DASAR_OUTPUT = Path("output")
 HARI_RETENSI = 28
@@ -46,9 +47,9 @@ def simpan_csv(data, nama_file: str, folder_output: Path) -> Path:
 
 def get_data(koneksi: Connection, tipe_laporan: str, tanggal: str) -> pd.DataFrame:
     match tipe_laporan:
-        case "sales":
+        case TIPE_LAPORAN.SALES:
             return eksekusi_kueri(koneksi, get_kueri_sales(tanggal))
-        case "inventory":
+        case TIPE_LAPORAN.INVENTORY:
             return eksekusi_kueri(koneksi, get_kueri_inventori(tanggal))
 
 
@@ -69,9 +70,11 @@ def generate(mode: ModeScript, db: KredensialDatabase) -> list[Path]:
                 ) as koneksi:
                     data = get_data(koneksi, tipe, tanggal)
 
-                    tipe_file_laporan = "Sales" if tipe == "sales" else "Inventory"
+                    tipe_file_laporan = (
+                        "Sales" if tipe == TIPE_LAPORAN.SALES else "Inventory"
+                    )
 
-                    if mode.satu_file == "ya" and data is not None:
+                    if mode.satu_file and data is not None:
                         nonlocal df_satufile
                         df_satufile = pd.concat([df_satufile, data], ignore_index=True)
                     else:
@@ -84,7 +87,7 @@ def generate(mode: ModeScript, db: KredensialDatabase) -> list[Path]:
 
             proses_tanggal()
 
-        if mode.satu_file == "ya" and not df_satufile.empty:
+        if mode.satu_file and not df_satufile.empty:
             path = simpan_csv(
                 df_satufile,
                 f"AtmosID_{tipe}_{parse(max(mode.tanggal)).strftime('%Y%m%d')}.csv",

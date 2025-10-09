@@ -2,14 +2,16 @@ from utilitas.logging import log_dan_waktu
 from dataclasses import dataclass
 from argparse import Namespace
 from datetime import datetime, timedelta
+from utilitas.enums import TIPE_LAPORAN, MODE_TANGGAL, ARGUMEN
 
 
 @dataclass
 class ModeScript:
     tipe_laporan: list[str]
     tanggal: list[str]
-    satu_file: str
-    kirim_email: str
+    satu_file: bool
+    kirim_email: bool
+    transfer_sftp: bool
 
 
 def akhir_minggu_sebelumnya(tanggal: datetime, hari_pertama: int) -> datetime:
@@ -21,14 +23,14 @@ def akhir_minggu_sebelumnya(tanggal: datetime, hari_pertama: int) -> datetime:
 @log_dan_waktu("Mengkonversi argumen ke mode skrip")
 def eval_argumen(argumen: Namespace) -> ModeScript:
     list_tipe_laporan: list[str] = (
-        ["sales", "inventory"]
-        if argumen.tipe_laporan == "semua"
+        [TIPE_LAPORAN.SALES, TIPE_LAPORAN.INVENTORY]
+        if argumen.tipe_laporan == TIPE_LAPORAN.SEMUA
         else [argumen.tipe_laporan]
     )
 
     list_tanggal: list[str] = []
     match argumen.mode_tanggal:
-        case "periode":
+        case MODE_TANGGAL.PERIODE:
             # unpack argumen.periode
             tanggal_awal, tanggal_akhir = (
                 argumen.periode[0],
@@ -51,12 +53,16 @@ def eval_argumen(argumen: Namespace) -> ModeScript:
                 tanggal_sekarang += timedelta(days=1)
             # convert it into list and sort it
             list_tanggal = sorted(set_tanggal)
-        case "tanggal":
+        case MODE_TANGGAL.TANGGAL:
             akhir_minggu = akhir_minggu_sebelumnya(
                 argumen.tanggal, argumen.hari_pertama
             )
             list_tanggal.append(akhir_minggu.strftime("%Y-%m-%d"))
 
     return ModeScript(
-        list_tipe_laporan, list_tanggal, argumen.satu_file, argumen.kirim_email
+        list_tipe_laporan,
+        list_tanggal,
+        argumen.satu_file == ARGUMEN.YA,
+        argumen.kirim_email == ARGUMEN.YA,
+        argumen.transfer_sftp == ARGUMEN.YA,
     )
