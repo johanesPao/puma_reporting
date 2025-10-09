@@ -9,6 +9,7 @@ class ModeScript:
     tipe_laporan: list[str]
     tanggal: list[str]
     satu_file: str
+    kirim_email: str
 
 
 def akhir_minggu_sebelumnya(tanggal: datetime, hari_pertama: int) -> datetime:
@@ -56,4 +57,6 @@ def eval_argumen(argumen: Namespace) -> ModeScript:
             )
             list_tanggal.append(akhir_minggu.strftime("%Y-%m-%d"))
 
-    return ModeScript(list_tipe_laporan, list_tanggal, argumen.satu_file)
+    return ModeScript(
+        list_tipe_laporan, list_tanggal, argumen.satu_file, argumen.kirim_email
+    )
