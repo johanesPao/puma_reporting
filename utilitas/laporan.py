@@ -7,7 +7,7 @@ from utilitas.logging import log_dan_waktu
 from utilitas.eval_argumen import ModeScript
 from utilitas.rahasia import KredensialDatabase
 from dateutil.parser import parse
-from koneksi.mssql import buka_koneksi, eksekusi_kueri, tutup_koneksi
+from koneksi.mssql import buka_koneksi, eksekusi_kueri
 from kueri.mssql import get_kueri_sales, get_kueri_inventori
 
 FOLDER_DASAR_OUTPUT = Path("output")
