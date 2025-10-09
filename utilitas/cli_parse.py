@@ -81,7 +81,15 @@ def parse_argumen() -> argparse.Namespace:
         type=str,
         choices=["ya", "tidak"],
         default="tidak",
-        help="Dump data laporan per tipe laporan dalam periode (default: False)",
+        help="Dump data laporan per tipe laporan dalam periode (default: tidak)",
+    )
+    parser.add_argument(
+        "-ke",
+        "--kirim-email",
+        type=str,
+        choices=["ya", "tidak"],
+        default="ya",
+        help="Mengirimkan email pada akhir proses (default: ya)",
     )
     args = parser.parse_args()
 
