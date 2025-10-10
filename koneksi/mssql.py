@@ -6,7 +6,13 @@ def buka_koneksi(
     server: str, port: str, database: str, uid: str, pwd: str
 ) -> Connection:
     string_koneksi = (
-        f"SERVER={server},{port};DATABASE={database};UID={uid};PWD={pwd};Encrypt=no"
+        f"Driver={{ODBC Driver 18 for SQL Server}};"
+        f"Server={server},{port};"
+        f"Database={database};"
+        f"UID={uid};"
+        f"PWD={pwd};"
+        f"Encrypt=no;"
+        f"TrustServerCertificate=yes;"
     )
     return connect(string_koneksi)
 
