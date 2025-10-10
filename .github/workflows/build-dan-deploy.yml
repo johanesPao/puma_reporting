@@ -81,5 +81,5 @@ jobs:
 
             - name: Letakkan executable di folder destinasi (overwriting)
               run: |
-                sshpass -p "${{ secrets.WIN_PASS }}" scp -o StrictHostKeyChecking=no ${{ secrets.NAMA_APLIKASI }}.exe ${{ secrets.WIN_USER }}@${{ secrets.WIN_HOST }}:"${{ secrets.WIN_TARGET_FOLDER }}/${{ secrets.NAMA_APLIKASI}}"
+                sshpass -p "${{ secrets.WIN_PASS }}" scp -o StrictHostKeyChecking=no ${{ secrets.NAMA_APLIKASI }}.exe ${{ secrets.WIN_USER }}@${{ secrets.WIN_HOST }}:"${{ secrets.WIN_TARGET_FOLDER }}/${{ secrets.NAMA_APLIKASI}}.exe"
               shell: bash
