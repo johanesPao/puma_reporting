@@ -21,6 +21,7 @@ def kirim_email(
     pesan = MIMEMultipart()
     pesan["From"] = dari
     pesan["To"] = to_addr
+    pesan["Cc"] = cc_addr
     pesan["Subject"] = subyek
 
     # Tambahkan CC
@@ -47,14 +48,9 @@ def kirim_email(
                 )
                 pesan.attach(part)
 
-    # Penerima dan Carbon Copy
-    penerima = [to_addr]
-    if cc_addr:
-        penerima.extend(cc_addr)
-
     # Kirim
     with smtplib.SMTP("smtp.gmail.com", 587) as server:
         server.ehlo()
         server.starttls()
         server.login(dari, password)
-        server.send_message(dari, penerima, pesan.as_string())
+        server.send_message(pesan)
