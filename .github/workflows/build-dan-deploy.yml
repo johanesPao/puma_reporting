@@ -34,10 +34,10 @@ jobs:
             - name: Build PUMA Reporting
               run: |
                 pyinstaller --onefile \
-                --name ${{ secrets.NAMA_APLIKASI }} \
-                --hidden-import=mssql_python.ddbc_bindings \
-                --collect-all mssql_python \
-                main.py
+                  --name "${{ secrets.NAMA_APLIKASI }}" \
+                  --collect-all mssql_python \
+                  --add-binary "$(python -c 'import mssql_python, os; print(os.path.join(os.path.dirname(mssql_python.__file__), "ddbc_bindings.cp311-amd64.pyd"))');mssql_python" \
+                  main.py
               shell: bash
               env:
                 DB_SERVER: ${{ secrets. DB_SERVER }}
