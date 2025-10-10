@@ -4,6 +4,7 @@ from utilitas.cli_parse import parse_argumen
 from utilitas.eval_argumen import eval_argumen
 from utilitas.rahasia import Rahasia
 from utilitas.laporan import generate
+from utilitas.sftp import transfer_file_sftp
 from utilitas.isi_email import generate_isi_email
 from utilitas.email import kirim_email
 
@@ -32,6 +33,15 @@ if __name__ == "__main__":
 
     file_csv = generate(mode_skrip, rahasia.db)
 
+    if mode_skrip.transfer_sftp:
+        transfer_file_sftp(
+            rahasia.sftp.host,
+            rahasia.sftp.port,
+            rahasia.sftp.user,
+            rahasia.sftp.password,
+            file_csv,
+        )
+
     if mode_skrip.kirim_email:
         # Ambil tanggal paling akhir dari mode_skrip.tanggal
         tgl_akhir = max(parse(tgl) for tgl in mode_skrip.tanggal)
@@ -53,4 +63,5 @@ if __name__ == "__main__":
             to_addr=rahasia.email.to,
             isi_html=isi_html,
             lampiran=file_csv,
+            cc_addr=rahasia.email.cc,
         )
