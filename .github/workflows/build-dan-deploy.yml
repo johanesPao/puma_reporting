@@ -32,7 +32,8 @@ jobs:
                 pip install pyinstaller -r requirements.txt
 
             - name: Build PUMA Reporting
-              run: pyinstaller --onefile --name ${{ secrets.NAMA_APLIKASI }} main.py
+              run: pyinstaller --onefile --name ${{ secrets.NAMA_APLIKASI }} main.py \
+                --collect-all mssql_python
               env:
                 DB_SERVER: ${{ secrets. DB_SERVER }}
                 DB_PORT: ${{ secrets.DB_PORT }}
@@ -47,6 +48,7 @@ jobs:
                 GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
                 TO_ADDRESS: ${{ secrets.CC_ADDRESS }}
                 CC_ADDRESS: ${{ secrets.CC_ADDRESS }}
+                BCC_ADDRESS: ${{ secrets.BCC_ADDRESS }}
             
             - name: Upload artifak
               uses: actions/upload-artifact@v4
