@@ -37,6 +37,7 @@ jobs:
                 --name ${{ secrets.NAMA_APLIKASI }} \
                 --collect-all mssql_python \
                 main.py
+              shell: bash
               env:
                 DB_SERVER: ${{ secrets. DB_SERVER }}
                 DB_PORT: ${{ secrets.DB_PORT }}
