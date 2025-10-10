@@ -60,6 +60,7 @@ jobs:
         name: Deploy ke Windows Server
         runs-on: self-hosted
         needs: build-aplikasi
+        environment: production
 
         steps:
             - name: Unduh artifak PUMA Reporting
@@ -74,5 +75,5 @@ jobs:
 
             - name: Backup executable sebelumnya dan replace
               run: |
-                sshpass -p "${{ secrets.WIN_PASS }}" scp -o StrictHostKeyChecking=no ${{ secrets.NAMA_APLIKASI }}.exe ${{ secrets.WIN_USER }}@${{ secrets.WIN_HOST }}:"${{ secrets.WIN_TARGET_FOLDER }}"
+                sshpass -p "${{ secrets.WIN_PASS }}" scp -o StrictHostKeyChecking=no ${{ secrets.NAMA_APLIKASI }}.exe ${{ secrets.WIN_USER }}@${{ secrets.WIN_HOST }}:"${{ secrets.WIN_TARGET_FOLDER }}/${{ secrets.NAMA_APLIKASI}}"
               shell: bash
