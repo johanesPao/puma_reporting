@@ -4,7 +4,10 @@ import re
 
 
 def generate_isi_email(
-    path_file_log: str, week_ending_str: str, proses_sukses: bool
+    path_file_log: str,
+    week_ending_str: str,
+    proses_kirim_sftp_sukses: bool | None,
+    proses_generate_sukses: bool,
 ) -> str:
     isi_html = f"""
     <p>Dear all,</p>
@@ -12,13 +15,18 @@ def generate_isi_email(
     <p>Laporan mingguan <i>sales</i> dan <i>inventory</i> PUMA untuk <i>week ending date</i> 
     {week_ending_str} 
     {
-        "berhasil di-<i>generate</i> dan dikirimkan ke SFTP PUMA."
-        if proses_sukses
+        "berhasil di-<i>generate</i>"
+        if proses_generate_sukses
         else "<span style='color:#ff5555;'>gagal di-<i>generate</i></span>."
+    }
+    {
+        ", namun file gagal dikirimkan ke SFTP PUMA."
+        if not proses_kirim_sftp_sukses
+        else "dan dikirimkan ke SFTP PUMA."
     }</p> 
     {
-        "<p><i>Intervensi manual dengan SSH atau RDP ke server perlu dilakukan untuk menjalankan skrip."
-        if not proses_sukses
+        "<p><i>Intervensi manual dengan SSH atau RDP ke server perlu dilakukan untuk menjalankan ulang skrip."
+        if not proses_generate_sukses or not proses_kirim_sftp_sukses
         else ""
     }
     <p>Log dari proses adalah sebagai berikut.</p>

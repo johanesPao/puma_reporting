@@ -34,13 +34,18 @@ if __name__ == "__main__":
     file_csv = generate(mode_skrip, rahasia.db)
 
     if mode_skrip.transfer_sftp:
-        transfer_file_sftp(
+        sftp_berhasil = transfer_file_sftp(
             rahasia.sftp.host,
             rahasia.sftp.port,
             rahasia.sftp.user,
             rahasia.sftp.password,
             file_csv,
         )
+
+        if not sftp_berhasil:
+            logging.warning(
+                "⚠️ Transfer SFTP gagal, melanjutkan proses pengiriman email..."
+            )
 
     if mode_skrip.kirim_email:
         # Ambil tanggal paling akhir dari mode_skrip.tanggal
@@ -53,7 +58,10 @@ if __name__ == "__main__":
         isi_html = generate_isi_email(
             FILE_LOG,
             tgl_akhir_string,
-            proses_sukses=bool(file_csv and len(file_csv) > 0),
+            proses_kirim_sftp_sukses=None
+            if not mode_skrip.transfer_sftp
+            else sftp_berhasil,
+            proses_generate_sukses=bool(file_csv and len(file_csv) > 0),
         )
 
         kirim_email(
@@ -64,4 +72,5 @@ if __name__ == "__main__":
             isi_html=isi_html,
             lampiran=file_csv,
             cc_addr=rahasia.email.cc,
+            bcc_addr=rahasia.email.bcc,
         )

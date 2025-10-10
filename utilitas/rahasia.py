@@ -27,6 +27,7 @@ class KredensialEmail:
     password: str
     to: str
     cc: str
+    bcc: str
 
 
 @log_dan_waktu("Membaca dan memuat rahasia lingkungan")
@@ -51,4 +52,5 @@ class Rahasia:
             password=os.getenv("GMAIL_APP_PASSWORD"),
             to=os.getenv("TO_ADDRESS"),
             cc=os.getenv("CC_ADDRESS"),
+            bcc=os.getenv("BCC_ADDRESS"),
         )

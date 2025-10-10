@@ -14,6 +14,7 @@ def kirim_email(
     isi_html: str,
     lampiran: list[str] | None = None,
     cc_addr: str | None = None,
+    bcc_addr: str | None = None,
 ) -> None:
     dari = gmail_account
     password = gmail_app_password
@@ -21,12 +22,9 @@ def kirim_email(
     pesan = MIMEMultipart()
     pesan["From"] = dari
     pesan["To"] = to_addr
-    pesan["Cc"] = cc_addr
-    pesan["Subject"] = subyek
-
-    # Tambahkan CC
     if cc_addr:
         pesan["Cc"] = cc_addr
+    pesan["Subject"] = subyek
 
     # HTML body email
     pesan.attach(MIMEText(isi_html, "html", "utf-8"))
@@ -48,9 +46,16 @@ def kirim_email(
                 )
                 pesan.attach(part)
 
+    # Gabungkan semua penerima (To + Cc + Bcc) dalam list
+    penerima = [addr.strip() for addr in to_addr.split(",")]
+    if cc_addr:
+        penerima.extend(addr.strip() for addr in cc_addr.split(","))
+    if bcc_addr:
+        penerima.extend(addr.strip() for addr in bcc_addr.split(","))
+
     # Kirim
     with smtplib.SMTP("smtp.gmail.com", 587) as server:
         server.ehlo()
         server.starttls()
         server.login(dari, password)
-        server.send_message(pesan)
+        server.send_message(pesan, to_addrs=penerima)
