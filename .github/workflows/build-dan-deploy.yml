@@ -76,7 +76,8 @@ jobs:
 
             - name: Buat folder di destinasi jika belum ada
               run: |
-                sshpass -p "${{ secrets.WIN_PASS }}" ssh -o StrictHostKeyChecking=no ${{ secrets.WIN_USER }}@${{ secrets.WIN_HOST }} "mkdir -p '${{ secrets.WIN_TARGET_FOLDER }}'"
+                sshpass -p "${{ secrets.WIN_PASS }}" ssh -o StrictHostKeyChecking=no ${{ secrets.WIN_USER }}@${{ secrets.WIN_HOST }} \
+                powershell -NoProfile -NonInteractive -Command "New-Item -ItemType Directory -Path '${{ secrets.WIN_TARGET_FOLDER }}' -Force"
               shell: bash
 
             - name: Letakkan executable di folder destinasi (overwriting)
