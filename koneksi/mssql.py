@@ -14,6 +14,8 @@ def buka_koneksi(
         f"Encrypt=no;"
         f"TrustServerCertificate=yes;"
     )
+    print("Connection string used:")
+    print(string_koneksi)
     return connect(string_koneksi)
 
 
