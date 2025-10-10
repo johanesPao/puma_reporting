@@ -32,8 +32,11 @@ jobs:
                 pip install pyinstaller -r requirements.txt
 
             - name: Build PUMA Reporting
-              run: pyinstaller --onefile --name ${{ secrets.NAMA_APLIKASI }} main.py \
-                --collect-all mssql_python
+              run: |
+                pyinstaller --onefile \
+                --name ${{ secrets.NAMA_APLIKASI }} \
+                --collect-all mssql_python \
+                main.py
               env:
                 DB_SERVER: ${{ secrets. DB_SERVER }}
                 DB_PORT: ${{ secrets.DB_PORT }}
