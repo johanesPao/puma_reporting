@@ -67,7 +67,7 @@ jobs:
             - name: Unduh artifak PUMA Reporting
               uses: actions/download-artifact@v5
               with:
-                name: ${{ secrets.NAMA_APLIKASI }}
+                name: puma-reporting
 
             - name: Verifikasi artifak
               run: |
