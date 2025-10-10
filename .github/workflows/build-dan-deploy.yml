@@ -35,7 +35,7 @@ jobs:
               run: |
                 pyinstaller --onefile \
                 --name ${{ secrets.NAMA_APLIKASI }} \
-                --hidden-import=mssql_python_bindings \
+                --hidden-import=mssql_python.ddbc_bindings \
                 --collect-all mssql_python \
                 main.py
               shell: bash
