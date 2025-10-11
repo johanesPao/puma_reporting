@@ -50,7 +50,7 @@ jobs:
               shell: bash
 
             - name: Menghapus rahasia_buildinfo.py dari runner
-              run: rm -f rahasia_buildinfo.py
+              run: rm -f utilitas/rahasia_buildinfo.py
               shell: bash
             
             - name: Upload artifak
