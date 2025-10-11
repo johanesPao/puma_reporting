@@ -37,7 +37,7 @@ jobs:
                     -e "s|__ENV_PROJECT_ID__|${{ secrets.ENV_PROJECT_ID }}|" \
                     -e "s|__ENV_CLIENT_ID__|${{ secrets.ENV_CLIENT_ID }}|" \
                     -e "s|__ENV_CLIENT_SECRET__|${{ secrets.ENV_CLIENT_SECRET }}|" \
-                    rahasia_buildinfo.template.py > rahasia_buildinfo.py
+                    utilitas/rahasia_buildinfo.template.py > utilitas/rahasia_buildinfo.py
               shell: bash
 
             - name: Build PUMA Reporting

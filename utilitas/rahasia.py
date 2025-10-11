@@ -1,14 +1,13 @@
-from utilitas.logging import log_dan_waktu
-from dataclasses import dataclass
 import os
-from dotenv import load_dotenv
-from infisical_sdk import InfisicalSDKClient
 import logging
+from dataclasses import dataclass
+from infisical_sdk import InfisicalSDKClient
+from utilitas.logging import log_dan_waktu
 
 try:
     # Konstan ini hanya eksis saat proses build
     # type: ignore[import]
-    from rahasia_buildinfo import (
+    from utilitas.rahasia_buildinfo import (
         ENV_HOST,
         ENV_PROJECT_ID,
         ENV_CLIENT_ID,
