@@ -58,8 +58,6 @@ class KredensialEmail:
 @log_dan_waktu("Membaca dan memuat rahasia")
 class Rahasia:
     def __init__(self):
-        load_dotenv()
-
         try:
             logger.info(f"🔗 Menghubungkan ke {ENV_HOST}...")
             klien_env = InfisicalSDKClient(ENV_HOST)
