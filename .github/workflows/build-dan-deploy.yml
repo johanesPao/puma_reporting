@@ -31,25 +31,14 @@ jobs:
                 pip install --upgrade pip
                 pip install pyinstaller -r requirements.txt
 
-            - name: Menulis .env file dalam runner
-              shell: bash
+            - name: Injeksi kredensial infisical ke dalam kode
               run: |
-                cat <<EOF > .env
-                DB_SERVER=${{ secrets. DB_SERVER }}
-                DB_PORT=${{ secrets.DB_PORT }}
-                DB_DATABASE=${{ secrets.DB_DATABASE }}
-                DB_UID=${{ secrets.DB_UID }}
-                DB_PWD=${{ secrets.DB_PWD }}
-                SFTP_HOST=${{ secrets.SFTP_HOST }}
-                SFTP_PORT=${{ secrets.SFTP_PORT }}
-                SFTP_USER=${{ secrets.SFTP_USER }}
-                SFTP_PASSWORD=${{ secrets.SFTP_PASSWORD }}
-                GMAIL_ACCOUNT=${{ secrets.GMAIL_ACCOUNT }}
-                GMAIL_APP_PASSWORD=${{ secrets.GMAIL_APP_PASSWORD }}
-                TO_ADDRESS=${{ secrets.CC_ADDRESS }}
-                CC_ADDRESS=${{ secrets.CC_ADDRESS }}
-                BCC_ADDRESS=${{ secrets.BCC_ADDRESS }}
-                EOF
+                sed -e "s|__ENV_HOST__|${{ secrets.ENV_HOST }}|" \
+                    -e "s|__ENV_PROJECT_ID__|${{ secrets.ENV_PROJECT_ID }}|" \
+                    -e "s|__ENV_CLIENT_ID__|${{ secrets.ENV_CLIENT_ID }}|" \
+                    -e "s|__ENV_CLIENT_SECRET__|${{ secrets.ENV_CLIENT_SECRET }}|" \
+                    rahasia_buildinfo.template.py > rahasia_buildinfo.py
+              shell: bash
 
             - name: Build PUMA Reporting
               run: |
@@ -57,8 +46,11 @@ jobs:
                   --name "${{ secrets.NAMA_APLIKASI }}" \
                   --collect-all mssql_python \
                   --add-binary "$(python -c 'import mssql_python, os; print(os.path.join(os.path.dirname(mssql_python.__file__), "ddbc_bindings.cp311-amd64.pyd"))');mssql_python" \
-                  --add-data ".env;." \
                   main.py
+              shell: bash
+
+            - name: Menghapus rahasia_buildinfo.py dari runner
+              run: rm -f rahasia_buildinfo.py
               shell: bash
             
             - name: Upload artifak
