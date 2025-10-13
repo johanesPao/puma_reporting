@@ -44,6 +44,7 @@ jobs:
               run: |
                 pyinstaller --onefile \
                   --name "${{ secrets.NAMA_APLIKASI }}" \
+                  --hidden-import=pyodbc \
                   main.py
               shell: bash
 
