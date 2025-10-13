@@ -13,14 +13,13 @@ WORKDIR /puma_reporting
 COPY --from=builder /usr/local /usr/local
 COPY . .
 # Install unixodbc
-RUN apt-get update && apt-get install -y unixodbc odbcinst && \
+RUN apt-get update && apt-get install -y unixodbc odbcinst curl gpg && \
+    # Add Microsoft repository key
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg && \
+    # Add repo for Debian 11/Bullseye
+    echo "deb [signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/11/prod bullseye main" > /etc/apt/sources.list.d/mssql-release.list && \
+    apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql18 && \
     # Clean up
     rm -rf /var/lib/apt/lists/*
-#     # Menambahkan kunci repo microsoft
-#     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg && \
-#     # Menambahkan repo Microsoft SQL Server
-#     echo "deb [signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/11/prod stable main" > /etc/apt/sources.list.d/mssql-release.list && \
-#     # Install msodbcsql18
-#     apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql18 && \
 
 CMD ["python", "main.py"]
