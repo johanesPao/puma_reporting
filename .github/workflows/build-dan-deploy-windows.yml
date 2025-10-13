@@ -1,4 +1,4 @@
-name: Build dan Deploy PUMA Reporting
+name: Build dan Deploy PUMA Reporting di Windows Server 2019
 
 on:
     push:

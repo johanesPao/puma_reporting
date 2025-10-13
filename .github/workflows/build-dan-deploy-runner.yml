@@ -1,4 +1,4 @@
-name: Build and Deploy Image PUMA_Reporting
+name: Build and Deploy Image PUMA_Reporting di Ubuntu
 
 on:
   push:
