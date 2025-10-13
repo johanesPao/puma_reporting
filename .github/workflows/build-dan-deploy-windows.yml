@@ -1,0 +1,89 @@
+name: Build dan Deploy PUMA Reporting
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    # -----------------------------------
+    # 1. BUILD MENGGUNAKAN WINDOWS RUNNER
+    # -----------------------------------
+    build-aplikasi:
+        name: Build Windows Executable
+        runs-on: windows-latest
+        environment: production
+
+        steps:
+            - name: Checkout code di repository
+              uses: actions/checkout@v5
+              with:
+                submodules: true
+                token: ${{ secrets.SUBMODULE_PAT }}
+            
+            - name: Set up Python
+              uses: actions/setup-python@v6
+              with:
+                python-version: 3.11
+
+            - name: Install dependencies
+              run: |
+                pip install --upgrade pip
+                pip install pyinstaller -r requirements.txt
+
+            - name: Injeksi kredensial infisical ke dalam kode
+              run: |
+                sed -e "s|__ENV_HOST__|${{ secrets.ENV_HOST }}|" \
+                    -e "s|__ENV_PROJECT_ID__|${{ secrets.ENV_PROJECT_ID }}|" \
+                    -e "s|__ENV_CLIENT_ID__|${{ secrets.ENV_CLIENT_ID }}|" \
+                    -e "s|__ENV_CLIENT_SECRET__|${{ secrets.ENV_CLIENT_SECRET }}|" \
+                    utilitas/rahasia_buildinfo.template.py > utilitas/rahasia_buildinfo.py
+              shell: bash
+
+            - name: Build PUMA Reporting
+              run: |
+                pyinstaller --onefile \
+                  --name "${{ secrets.NAMA_APLIKASI }}" \
+                  main.py
+              shell: bash
+
+            - name: Menghapus rahasia_buildinfo.py dari runner
+              run: rm -f utilitas/rahasia_buildinfo.py
+              shell: bash
+            
+            - name: Upload artifak
+              uses: actions/upload-artifact@v4
+              with:
+                name: puma-reporting
+                path: dist/${{ secrets.NAMA_APLIKASI }}.exe
+
+    # -------------------------------------
+    # DEPLOY KE PRODUKSI VIA BASTION RUNNER
+    # -------------------------------------
+    deploy-aplikasi:
+        name: Deploy ke Windows Server
+        runs-on: self-hosted
+        needs: build-aplikasi
+        environment: production
+
+        steps:
+            - name: Unduh artifak PUMA Reporting
+              uses: actions/download-artifact@v5
+              with:
+                name: puma-reporting
+
+            - name: Verifikasi artifak
+              run: |
+                ls -lh
+                file ${{ secrets.NAMA_APLIKASI }}.exe
+
+            - name: Buat folder di destinasi jika belum ada
+              run: |
+                sshpass -p "${{ secrets.WIN_PASS }}" ssh -o StrictHostKeyChecking=no ${{ secrets.WIN_USER }}@${{ secrets.WIN_HOST }} \
+                powershell -NoProfile -NonInteractive -Command "New-Item -ItemType Directory -Path '${{ secrets.WIN_TARGET_FOLDER }}' -Force"
+              shell: bash
+
+            - name: Letakkan executable di folder destinasi (overwriting)
+              run: |
+                sshpass -p "${{ secrets.WIN_PASS }}" scp -o StrictHostKeyChecking=no ${{ secrets.NAMA_APLIKASI }}.exe ${{ secrets.WIN_USER }}@${{ secrets.WIN_HOST }}:"${{ secrets.WIN_TARGET_FOLDER }}/${{ secrets.NAMA_APLIKASI}}.exe"
+              shell: bash
