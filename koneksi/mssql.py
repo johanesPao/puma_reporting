@@ -1,4 +1,4 @@
-from mssql_python import Connection, connect
+from pyodbc import Connection, connect
 from pandas import DataFrame
 
 
