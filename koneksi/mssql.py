@@ -1,11 +1,12 @@
-from pyodbc import Connection, connect
-from pandas import DataFrame
+from sqlalchemy import Connection, create_engine
+import urllib
+from pandas import DataFrame, read_sql
 
 
 def buka_koneksi(
     server: str, port: str, database: str, uid: str, pwd: str
 ) -> Connection:
-    string_koneksi = (
+    string_koneksi = urllib.parse.quote_plus(
         f"Driver={{ODBC Driver 18 for SQL Server}};"
         f"Server={server},{port};"
         f"Database={database};"
@@ -15,15 +16,11 @@ def buka_koneksi(
         f"TrustServerCertificate=yes;"
     )
 
-    return connect(string_koneksi)
+    return create_engine(f"mssql+pyodbc:///?odbc_connect={string_koneksi}").connect()
 
 
 def eksekusi_kueri(koneksi: Connection, query: str) -> DataFrame:
-    kursor = koneksi.cursor()
-    kursor.execute(query)
-    hasil = kursor.fetchall()
-    kolom = [kol[0] for kol in kursor.description]
-    return DataFrame(hasil, columns=kolom)
+    return read_sql(query, koneksi)
 
 
 def tutup_koneksi(koneksi: Connection) -> None:

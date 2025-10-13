@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
 from datetime import datetime, timedelta
-from pyodbc import Connection
+from sqlalchemy import Connection
 import pandas as pd
 from utilitas.logging import log_dan_waktu
 from utilitas.eval_argumen import ModeScript
