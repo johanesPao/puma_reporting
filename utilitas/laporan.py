@@ -39,9 +39,9 @@ def setup_folder_output() -> Path:
     return folder_output
 
 
-def simpan_csv(data, nama_file: str, folder_output: Path) -> Path:
+def simpan_xlsx(data, nama_file: str, folder_output: Path) -> Path:
     path_file = folder_output / nama_file
-    data.to_csv(path_file, index=False, encoding="utf-8-sig")
+    data.to_excel(path_file, index=False)
     return path_file
 
 
@@ -78,9 +78,9 @@ def generate(mode: ModeScript, db: KredensialDatabase) -> list[Path]:
                         nonlocal df_satufile
                         df_satufile = pd.concat([df_satufile, data], ignore_index=True)
                     else:
-                        path = simpan_csv(
+                        path = simpan_xlsx(
                             data,
-                            f"AtmosID_{tipe_file_laporan}_{parse(tanggal).strftime('%Y%m%d')}.csv",
+                            f"AtmosID_{tipe_file_laporan}_{parse(tanggal).strftime('%Y%m%d')}.xlsx",
                             folder_output,
                         )
                         csv_terbentuk.append(path)
@@ -88,9 +88,9 @@ def generate(mode: ModeScript, db: KredensialDatabase) -> list[Path]:
             proses_tanggal()
 
         if mode.satu_file and not df_satufile.empty:
-            path = simpan_csv(
+            path = simpan_xlsx(
                 df_satufile,
-                f"AtmosID_{tipe}_{parse(max(mode.tanggal)).strftime('%Y%m%d')}.csv",
+                f"AtmosID_{tipe}_{parse(max(mode.tanggal)).strftime('%Y%m%d')}.xlsx",
                 folder_output,
             )
             csv_terbentuk.append(path)

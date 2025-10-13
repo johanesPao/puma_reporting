@@ -31,7 +31,7 @@ if __name__ == "__main__":
     mode_skrip = eval_argumen(argumen)
     rahasia = Rahasia()
 
-    file_csv = generate(mode_skrip, rahasia.db)
+    file_xlsx = generate(mode_skrip, rahasia.db)
 
     if mode_skrip.transfer_sftp:
         sftp_berhasil = transfer_file_sftp(
@@ -39,7 +39,7 @@ if __name__ == "__main__":
             rahasia.sftp.port,
             rahasia.sftp.user,
             rahasia.sftp.password,
-            file_csv,
+            file_xlsx,
         )
 
         if not sftp_berhasil:
@@ -61,7 +61,7 @@ if __name__ == "__main__":
             proses_kirim_sftp_sukses=None
             if not mode_skrip.transfer_sftp
             else sftp_berhasil,
-            proses_generate_sukses=bool(file_csv and len(file_csv) > 0),
+            proses_generate_sukses=bool(file_xlsx and len(file_xlsx) > 0),
         )
 
         kirim_email(
@@ -70,7 +70,7 @@ if __name__ == "__main__":
             subyek=subyek_email,
             to_addr=rahasia.email.to,
             isi_html=isi_html,
-            lampiran=file_csv,
+            lampiran=file_xlsx,
             cc_addr=rahasia.email.cc,
             bcc_addr=rahasia.email.bcc,
         )
