@@ -107,4 +107,9 @@ def parse_argumen() -> argparse.Namespace:
             f"Mode '{MODE_TANGGAL.PERIODE}' mengharuskan argumen --periode diisi."
         )
 
+    if args.periode is not None and args.mode_tanggal == MODE_TANGGAL.TANGGAL:
+        parser.error(
+            f"--periode / -p tidak dapat digunakan jika -mt / --mode-tanggal tidak sama dengan {MODE_TANGGAL.PERIODE}"
+        )
+
     return args
