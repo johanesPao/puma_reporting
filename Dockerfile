@@ -14,9 +14,12 @@ COPY --from=builder /usr/local /usr/local
 COPY . .
 # Install unixodbc dan msodbcsql18
 RUN apt-get update && apt-get install -y unixodbc odbcinst curl apt-transport-https gnupg && \
+    # Menambahkan kunci repo microsoft
     curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg && \
-    apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql18 && \
+    # Menambahkan repo Microsoft SQL Server
     echo "deb [signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/12/prod stable main" > /etc/apt/sources.list.d/mssql-release.list && \
+    # Install msodbcsql18
+    apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql18 && \
     # Clean up
     rm -rf /var/lib/apt/lists/*
 
