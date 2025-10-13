@@ -1,0 +1,9 @@
+services:
+  puma_reporting:
+    image: https://ghcr.io/johanesPao/puma_reporting:latest
+    container_name: puma_reporting
+    restart: "no"
+    environment:
+      TZ: "Asia/Jakarta"
+  volumes:
+    - ./logs:/puma_reporting/logs

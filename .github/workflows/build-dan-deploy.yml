@@ -9,6 +9,7 @@ on:
 jobs:
   build-dan-deploy:
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
       - name: Check out code di repository
