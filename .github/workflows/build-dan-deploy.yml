@@ -14,6 +14,10 @@ jobs:
     steps:
       - name: Check out code di repository
         uses: actions/checkout@v5
+        with:
+          submodules: true
+          token: ${{ secrets.SUBMODULE_PAT }}
+          
 
       - name: Log in ke GHCR
         run: |
@@ -26,6 +30,7 @@ jobs:
           IMAGE_NAME=ghcr.io/$OWNER/puma_reporting:latest
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
+
   deploy:
     runs-on: self-hosted
     environment: production
