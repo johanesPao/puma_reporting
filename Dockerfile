@@ -1,28 +1,23 @@
-FROM python:3.13-slim
+FROM python:3.13-slim AS builder
 
 WORKDIR /puma_reporting
 
-COPY . .
+COPY requirements.txt .
 
-# Install git sebelum pip install untuk install mssql-python dari github
-RUN apt-get update && apt-get install -y \
-    # Install build dependencies yang dibutuhkan beberapa modul python
-    gcc \
-    g++ \
-    make \
-    unixodbc \
-    unixodbc-dev \
-    odbcinst \
-    curl \
-    apt-transport-https \
-    gnupg \
-    && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-    && curl https://packages.microsoft.com/config/debian/12/prod.list -o /etc/apt/sources.list.d/mssql-release.list \
-    && apt-get update \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
+# Install build tools untuk beberapa modul python (pandas etc)
+RUN apt-get update && apt-get install -y gcc & g++ unixodbc-dev && \
+    pip install --no-cache-dir -r requirements.txt
+
+FROM python:3.13-slim
+WORKDIR /puma_reporting
+COPY --from=builder /usr/local /usr/local
+COPY . .
+# Install unixodbc dan msodbcsql18
+RUN apt-get update && apt-get install -y unixodbc odbcinst curl apt-transport-https gnupg && \
+    curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg && \
+    apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
+    echo "deb [signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/12/prod stable main" > /etc/apt/sources.list.d/mssql-release.list && \
     # Clean up
     && rm -rf /var/libs/apt/lists/*
-
-RUN pip install --no-cache-dir -r requirements.txt
 
 CMD ["python", "main.py"]
