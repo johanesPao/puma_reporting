@@ -1,9 +1,12 @@
 services:
   puma_reporting:
-    image: https://ghcr.io/johanesPao/puma_reporting:latest
+    image: ghcr.io/johanesPao/puma_reporting:latest
     container_name: puma_reporting
-    restart: "no"
+    working_dir: /puma_reporting
+    env_file: .env
     environment:
       TZ: "Asia/Jakarta"
-  volumes:
-    - ./logs:/puma_reporting/logs
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - ./output:/puma_reporting/output
+    command: [ "python", "main.py" ]

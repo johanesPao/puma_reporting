@@ -26,3 +26,35 @@ jobs:
           IMAGE_NAME=ghcr.io/$OWNER/puma_reporting:latest
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
+
+      - name: Decode SSH key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY_B64 }}" | \
+          base64 --decode > private_key.pem
+          chmod 600 private_key.pem
+      
+      - name: SSH ke server reporting
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key_path: private_key.pem
+          script: |
+            # Buat folder jika tidak eksis
+            mkdir -p ~/reporting/puma
+            cd ~/reporting/puma
+
+            # Unduh docker-compose terbaru
+            curl -fsSLO https://raw.githubusercontent.com/johanesPao/puma_reporting/main/docker-compose.yml
+
+            # Write .env into folder
+            cat > .env <<EOF
+            ENV_HOST=${{ secrets.ENV_HOST }}
+            ENV_PROJECT_ID=${{ secrets.ENV_PROJECT_ID }}
+            ENV_CLIENT_ID=${{ secrets.ENV_CLIENT_ID }}
+            ENV_CLIENT_SECRET=${{ secrets.ENV_CLIENT_SECRET }}
+            EOF
+
+            chmod 600 .env
+
+
