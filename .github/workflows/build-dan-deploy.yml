@@ -31,6 +31,11 @@ jobs:
     environment: production
 
     steps:
+      - name: Login ke GHCR di server
+        run: |
+          echo "${{ secrets.GHCR_TOKEN }}" | \
+          docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          
       - name: Update docker compose dan .env
         run: |
           # Buat folder jika tidak eksis

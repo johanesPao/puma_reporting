@@ -1,6 +1,6 @@
 services:
   puma_reporting:
-    image: ghcr.io/johanesPao/puma_reporting:latest
+    image: ghcr.io/johanespao/puma_reporting:latest
     container_name: puma_reporting
     working_dir: /puma_reporting
     env_file: .env
