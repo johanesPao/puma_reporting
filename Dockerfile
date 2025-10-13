@@ -5,7 +5,7 @@ WORKDIR /puma_reporting
 COPY requirements.txt .
 
 # Install build tools untuk beberapa modul python (pandas etc)
-RUN apt-get update && apt-get install -y gcc & g++ unixodbc-dev && \
+RUN apt-get update && apt-get install -y gcc g++ unixodbc-dev && \
     pip install --no-cache-dir -r requirements.txt
 
 FROM python:3.13-slim
